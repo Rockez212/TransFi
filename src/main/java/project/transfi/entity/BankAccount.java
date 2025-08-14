@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import project.transfi.type.Status;
+import project.transfi.utill.BankConfig;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,8 +21,6 @@ public class BankAccount {
 
 
     private static final SecureRandom random = new SecureRandom();
-    private static final String COUNTRY_CODE = "MD";
-    private static final int ACCOUNT_LENGTH = 20;
 
 
     @Id
@@ -35,8 +33,8 @@ public class BankAccount {
     private User user;
     @Column(name = "iban")
     private String iban;
-    @Column(name = "currency")
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "currency_id")
     private Currency currency;
     @Column(name = "balance")
     private BigDecimal balance;
@@ -65,14 +63,14 @@ public class BankAccount {
         StringBuilder accountNumber = new StringBuilder();
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-        for (int i = 0; i < ACCOUNT_LENGTH; i++) {
+        for (int i = 0; i < BankConfig.getAccountLength(); i++) {
             accountNumber.append(chars.charAt(random.nextInt(chars.length())));
         }
 
-        String tempIban = COUNTRY_CODE + "00" + accountNumber.toString();
+        String tempIban = BankConfig.getCountryCode() + "00" + accountNumber.toString();
         String checkDigits = calculateCheckDigits(tempIban);
 
-        return COUNTRY_CODE + checkDigits + accountNumber.toString();
+        return BankConfig.getCountryCode() + checkDigits + accountNumber.toString();
     }
 
     private String calculateCheckDigits(String iban) {

@@ -20,6 +20,7 @@ public class Currency {
     private CurrencyType currencyType;
 
 
+
     protected Currency() {}
 
 }

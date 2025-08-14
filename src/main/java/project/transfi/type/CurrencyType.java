@@ -13,4 +13,6 @@ public enum CurrencyType {
     CurrencyType(String symbol) {
         this.symbol = symbol;
     }
+
+
 }

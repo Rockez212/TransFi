@@ -29,14 +29,14 @@ public class Card {
     private LocalDateTime expirationDate;
     @Column(name = "cvv_hash")
     private int cvvHash;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type")
-    private CardType type;
+    @ManyToOne
+    @JoinColumn(name = "card_type")
+    private CardCategory type;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
 
-    public Card(BankAccount account, CardType type) {
+    public Card(BankAccount account, CardCategory type) {
         this.account = account;
         this.cardNumber = generateCardNumber();
         this.expirationDate = getExpirationDate(LocalDateTime.now());
