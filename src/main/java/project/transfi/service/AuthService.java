@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.transfi.command.SignInCommand;
 import project.transfi.command.SignUpCommand;
 import project.transfi.entity.User;
@@ -21,7 +22,7 @@ public class AuthService {
     private final JwtUtill jwtUtill;
     private final PasswordEncoder passwordEncoder;
 
-
+    @Transactional
     public void signUp(SignUpCommand command) {
         checkIfUsernameExistsOrEmail(command.getUsername(), command.getEmail());
         User newUser = new User(command.getUsername(), command.getEmail(), passwordEncoder.encode(command.getPassword()));
@@ -30,7 +31,6 @@ public class AuthService {
 
     public void signIn(SignInCommand command) {
     }
-
     private void checkIfUsernameExistsOrEmail(String username, String email) {
         if (userRepository.existsByUsernameOrEmail(username, email)) {
             throw new UserAlreadyExistsException("Username already exists");

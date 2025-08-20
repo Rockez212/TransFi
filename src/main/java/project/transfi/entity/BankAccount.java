@@ -92,6 +92,14 @@ public class BankAccount {
         return String.format("%02d", checkDigitValue);
     }
 
+    public void subtractBalance(BigDecimal amount) {
+        this.balance = balance.subtract(amount);
+    }
+
+    public void addBalance(BigDecimal amount) {
+        this.balance = balance.add(amount);
+    }
+
 
     @Override
     public boolean equals(Object o) {

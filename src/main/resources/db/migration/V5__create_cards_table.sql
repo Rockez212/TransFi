@@ -4,9 +4,10 @@ CREATE TABLE cards
 (
     id              INTEGER PRIMARY KEY DEFAULT nextval('card_id_seq'),
     account_id      INTEGER references accounts (id),
+    card_balance    numeric(7,2)   not null,
     card_number     varchar(16) not null,
-    expiration_date timestamp   not null,
+    expiration_date date   not null,
     cvv_hash        INTEGER     not null,
-    card_type       INTEGER not null references cards_type(id),
+    card_type       INTEGER     not null references cards_type (id),
     status          varchar(50) not null
 );

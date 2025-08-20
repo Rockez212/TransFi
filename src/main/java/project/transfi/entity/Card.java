@@ -3,10 +3,11 @@ package project.transfi.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import project.transfi.type.CardType;
 import project.transfi.type.Status;
 
+import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Random;
@@ -23,10 +24,12 @@ public class Card {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private BankAccount account;
+    @Column(name = "card_balance")
+    private BigDecimal balance;
     @Column(name = "card_number")
     private String cardNumber;
     @Column(name = "expiration_date")
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
     @Column(name = "cvv_hash")
     private int cvvHash;
     @ManyToOne
@@ -38,8 +41,9 @@ public class Card {
 
     public Card(BankAccount account, CardCategory type) {
         this.account = account;
+        this.balance = BigDecimal.ZERO;
         this.cardNumber = generateCardNumber();
-        this.expirationDate = getExpirationDate(LocalDateTime.now());
+        this.expirationDate = getExpirationDate(LocalDate.now());
         this.cvvHash = generateCvv();
         this.type = type;
         this.status = Status.ACTIVE;
@@ -62,8 +66,16 @@ public class Card {
         return sb.toString();
     }
 
-    private LocalDateTime getExpirationDate(LocalDateTime now) {
+    private LocalDate getExpirationDate(LocalDate now) {
         return now.plusYears(4);
+    }
+
+    public void subtractBalance(BigDecimal amount) {
+        this.balance = balance.subtract(amount);
+    }
+
+    public void addBalance(BigDecimal amount) {
+        this.balance = balance.add(amount);
     }
 
 
