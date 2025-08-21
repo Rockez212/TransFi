@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.transfi.command.CardDetailsCommand;
 import project.transfi.command.CreateCardCommand;
+import project.transfi.command.TransferToCommand;
 import project.transfi.entity.Card;
 import project.transfi.exception.CardCategoryNotFoundException;
 import project.transfi.exception.CardNotFoundException;
@@ -33,22 +34,23 @@ public class CardService {
     }
 
     @Transactional
-    public void transferTo(Card fromCard, String toCardNumber, CardDetailsCommand command, int amount) {
-        Card toCard = cardRepository.findByCardNumber(toCardNumber).orElseThrow(() -> new CardNotFoundException("Card not found"));
-
+    public void transferTo(TransferToCommand transferToCommand, CardDetailsCommand command) {
+        Card toCard = cardRepository.findByCardNumber(transferToCommand.getToCardNumber()).orElseThrow(() -> new CardNotFoundException("Card not found"));
+        Card fromCard = cardRepository.findById(transferToCommand.getCardId()).orElseThrow(() -> new CardNotFoundException("Card not found"));
         if (!validateCard(fromCard, command) || toCard.getStatus() != Status.ACTIVE) {
             throw new IncorrectCredentials("Status of recipient is not active");
         }
-        validateAmountBalance(fromCard, amount);
-        fromCard.subtractBalance(BigDecimal.valueOf(amount));
-        toCard.addBalance(BigDecimal.valueOf(amount));
+
+        validateAmountBalance(fromCard, transferToCommand.getAmount());
+        fromCard.subtractBalance(BigDecimal.valueOf(transferToCommand.getAmount()));
+        toCard.addBalance(BigDecimal.valueOf(transferToCommand.getAmount()));
         cardRepository.save(fromCard);
         cardRepository.save(toCard);
     }
 
     private boolean validateCard(Card cardToValidate, CardDetailsCommand command) {
         if (cardToValidate.getStatus() == Status.ACTIVE) {
-            if (cardToValidate.getCardNumber().equals(command.getCardNumber())) {
+            if (cardToValidate.getCardNumber().equals(command.getToCardNumber())) {
                 if (cardToValidate.getExpirationDate().equals(command.getExpirationDate())) {
                     if (cardToValidate.getCvvHash() == command.getCvv()) {
                         return true;
