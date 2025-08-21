@@ -19,8 +19,11 @@ public class Currency {
     @Column(name = "name")
     private CurrencyType currencyType;
 
+    public Currency(CurrencyType currencyType) {
+        this.currencyType = currencyType;
+    }
 
-
-    protected Currency() {}
+    protected Currency() {
+    }
 
 }

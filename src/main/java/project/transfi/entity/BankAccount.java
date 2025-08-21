@@ -44,6 +44,8 @@ public class BankAccount {
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "account")
     private List<Card> cards;
+    @OneToMany(mappedBy = "fromAccount")
+    private List<Transaction> transactions;
 
 
     public BankAccount(User user, Currency currency) {
