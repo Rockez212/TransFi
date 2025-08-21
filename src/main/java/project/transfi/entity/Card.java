@@ -52,6 +52,7 @@ public class Card {
     protected Card() {
     }
 
+    //TODO: add currency type into card
 
     private int generateCvv() {
         return 100 + new SecureRandom().nextInt(900);
