@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CardDetailsCommand {
     private String toCardNumber;
-    private String cardNumber;
     private LocalDate expirationDate;
     private int cvv;
 }

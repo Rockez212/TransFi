@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import project.transfi.command.SignInCommand;
 import project.transfi.command.SignUpCommand;
+import project.transfi.dto.TokenResponseDto;
 import project.transfi.service.AuthService;
 
 @RestController
@@ -24,8 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("sign-in")
-    public ResponseEntity<String> signIn(@RequestBody @Valid SignInCommand command) {
-        authService.signIn(command);
-        return ResponseEntity.ok("Sign in successful");
+    public ResponseEntity<TokenResponseDto> signIn(@RequestBody @Valid SignInCommand command) {
+        return ResponseEntity.ok(authService.signIn(command));
     }
 }
