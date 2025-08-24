@@ -33,7 +33,7 @@ public class BankAccount {
     private User user;
     @Column(name = "iban")
     private String iban;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "currency_id")
     private Currency currency;
     @Column(name = "balance")

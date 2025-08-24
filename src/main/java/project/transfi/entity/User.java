@@ -45,7 +45,8 @@ public class User implements UserDetails {
         this.createdAt = LocalDateTime.now();
     }
 
-    protected User() {}
+    protected User() {
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -81,7 +82,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 
 
     @Override

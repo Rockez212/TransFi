@@ -7,5 +7,5 @@ import project.transfi.entity.Card;
 public class TransferToCommand {
     private Long cardId;
     private String toCardNumber;
-    private int amount;
+    private String amount;
 }

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CreateCardCommand {
-    @NotBlank(message = "card type cannot be blank")
-    public Long cardType;
+    @NotBlank(message = "The card type cannot be blank")
+    public Long cardTypeId;
+    @NotBlank(message = "The card’s currency must be mandatory. ")
+    public Long cardCurrencyId;
 }

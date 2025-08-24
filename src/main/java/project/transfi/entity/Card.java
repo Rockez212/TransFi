@@ -8,7 +8,6 @@ import project.transfi.type.Status;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Random;
 
@@ -21,7 +20,7 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_id_seq")
     @SequenceGenerator(name = "card_id_seq", sequenceName = "card_id_seq", allocationSize = 1)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private BankAccount account;
     @Column(name = "card_balance")
@@ -32,20 +31,24 @@ public class Card {
     private LocalDate expirationDate;
     @Column(name = "cvv_hash")
     private int cvvHash;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_type")
     private CardCategory type;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_type")
+    private Currency currencyType;
 
-    public Card(BankAccount account, CardCategory type) {
+    public Card(BankAccount account, CardCategory type, Currency currencyType) {
         this.account = account;
         this.balance = BigDecimal.ZERO;
         this.cardNumber = generateCardNumber();
         this.expirationDate = getExpirationDate(LocalDate.now());
         this.cvvHash = generateCvv();
         this.type = type;
+        this.currencyType = currencyType;
         this.status = Status.ACTIVE;
     }
 
@@ -79,6 +82,9 @@ public class Card {
         this.balance = balance.add(amount);
     }
 
+    public boolean checkBalance(BigDecimal amount) {
+        return balance.compareTo(amount) <= 0;
+    }
 
     @Override
     public boolean equals(Object o) {
