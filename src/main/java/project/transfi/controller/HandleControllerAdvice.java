@@ -5,10 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import project.transfi.exception.JwtValidateException;
-import project.transfi.exception.NotEnoughBalanceException;
-import project.transfi.exception.UserAlreadyExistsException;
-import project.transfi.exception.UserNotFoundException;
+import project.transfi.exception.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +27,7 @@ public class HandleControllerAdvice {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<String> handleUserAlreadyExist(UserAlreadyExistsException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
@@ -41,5 +38,45 @@ public class HandleControllerAdvice {
     @ExceptionHandler(NotEnoughBalanceException.class)
     public ResponseEntity<String> handleNotEnoughBalance(NotEnoughBalanceException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CardCategoryNotFoundException.class)
+    public ResponseEntity<String> handleCardCategoryNotFound(CardCategoryNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CardNotFoundException.class)
+    public ResponseEntity<String> handleCardNotFound(CardNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CurrencyNotFoundException.class)
+    public ResponseEntity<String> handleCurrencyNotFound(CurrencyNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IncorrectCredentials.class)
+    public ResponseEntity<String> handleIncorrectCredentials(IncorrectCredentials ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IncorrectCurrencyException.class)
+    public ResponseEntity<String> handleIncorrectCurrency(IncorrectCurrencyException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<String> handleInvalidPassword(InvalidPasswordException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TransactionTypeNotFoundException.class)
+    public ResponseEntity<String> handleTransactionTypeNotFound(TransactionTypeNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserAlreadyHasBankAccount.class)
+    public ResponseEntity<String> handleUserAlreadyHasBankAccount(UserAlreadyHasBankAccount ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 }

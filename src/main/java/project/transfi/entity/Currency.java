@@ -23,7 +23,7 @@ public class Currency {
         this.currencyType = currencyType;
     }
 
-    protected Currency() {
+    public Currency() {
     }
 
 }

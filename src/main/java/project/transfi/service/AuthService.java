@@ -36,7 +36,7 @@ public class AuthService {
         userRepository.save(newUser);
     }
 
-
+    @Transactional
     public TokenResponseDto signIn(SignInCommand command) {
         UsernamePasswordAuthenticationToken authInPutToken = new UsernamePasswordAuthenticationToken
                 (command.getUsername(), command.getPassword());
