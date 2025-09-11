@@ -19,7 +19,7 @@ Content-Type: application/json
 
 > {%
     if (response && response.body) {
-        const accessToken = response.body;
+        const {accessToken} = response.body;
         client.global.set("accessToken", accessToken);
         console.log("Access token successfully set:", accessToken);
 
@@ -27,4 +27,27 @@ Content-Type: application/json
         console.error("Response body is undefined or empty.");
     }
 %}
+
+
+
+### Create bank account
+POST http://localhost:8080/user/bank-accounts/create
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "currencyId": 1
+}
+
+### Create card
+POST http://localhost:8080/user/cards/create
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "cardTypeId": 2,
+  "cardCurrencyId": 1
+}
+
+
 

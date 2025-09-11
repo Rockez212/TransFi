@@ -29,7 +29,7 @@ public class CardCategory {
         this.cardType = type;
     }
 
-    public CardCategory() {
+    protected CardCategory() {
     }
 
 

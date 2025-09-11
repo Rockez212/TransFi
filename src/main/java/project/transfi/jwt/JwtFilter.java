@@ -1,6 +1,6 @@
 package project.transfi.jwt;
 
-import io.jsonwebtoken.JwtException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (token.isBlank()) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return; // ⚠️ ДОБАВЬТЕ return!
+                return;
             } else {
                 try {
                     Map<String, String> claims = jwtUtill.validateToken(token);
@@ -49,13 +49,14 @@ public class JwtFilter extends OncePerRequestFilter {
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
-                } catch (JwtException e) {
+                } catch (JWTVerificationException e) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid or expired JWT token");
-                    return; // ⚠️ ДОБАВЬТЕ return!
+                    return;
                 }
             }
         }
 
         filterChain.doFilter(request, response);
-    }}
+    }
+}
 

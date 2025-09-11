@@ -21,8 +21,9 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_account")
     private BankAccount fromAccount;
-    @Column(name = "to_account")
-    private Long counterpartyId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_account")
+    private BankAccount to_account;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transaction_type_id")
     private TransactionType type;
@@ -31,15 +32,15 @@ public class Transaction {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public Transaction(BankAccount fromAccount, Long counterpartyId, TransactionType type, BigDecimal amount) {
+    public Transaction(BankAccount fromAccount, BankAccount to_account, TransactionType type, BigDecimal amount) {
         this.fromAccount = fromAccount;
-        this.counterpartyId = counterpartyId;
+        this.to_account = to_account;
         this.type = type;
         this.amount = amount;
         this.createdAt = LocalDateTime.now();
     }
 
-    protected Transaction() {
+    public Transaction() {
     }
 
     @Override
