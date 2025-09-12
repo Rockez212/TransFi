@@ -17,8 +17,8 @@ public class CardType {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_seq")
     @SequenceGenerator(name = "card_type_seq", sequenceName = "card_type_seq", allocationSize = 1)
     private Long id;
-    @Column(name = "card_type")
     @Enumerated(EnumType.STRING)
+    @Column(name = "card_type")
     private CardTypeCode cardType;
 
 

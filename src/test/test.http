@@ -7,13 +7,22 @@ Content-Type: application/json
   "email": "ghertalilian2006@gmail.com",
   "password": "12345678"
 }
+### User Registration
+POST http://localhost:8080/auth/sign-up
+Content-Type: application/json
+
+{
+  "username": "Brocky",
+  "email": "ian2006@gmail.com",
+  "password": "12345678"
+}
 
 ### User Login
 POST http://localhost:8080/auth/sign-in
 Content-Type: application/json
 
 {
-  "username": "Rocky",
+  "username": "Brocky",
   "password": "12345678"
 }
 
@@ -36,7 +45,8 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "currencyId": 1
+  "currencyId": 1,
+  "statusId": 1
 }
 
 ### Create card

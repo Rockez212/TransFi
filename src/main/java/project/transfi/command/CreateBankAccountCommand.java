@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 public class CreateBankAccountCommand {
     @Min(value = 1, message = "Id must be at least 1")
     private Long currencyId;
+    @Min(value = 1,message = "Status must be at least 1")
+    private Long statusId;
 }

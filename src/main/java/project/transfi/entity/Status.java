@@ -17,6 +17,7 @@ public class Status {
     private Long id;
 
     @Column(name = "status_type")
+    @Enumerated(EnumType.STRING)
     private StatusType statusType;
 
     public Status(StatusType statusType) {
