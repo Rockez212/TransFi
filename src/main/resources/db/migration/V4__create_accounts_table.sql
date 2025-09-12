@@ -7,6 +7,6 @@ CREATE TABLE accounts
     iban        varchar(255) unique not null,
     currency_id INTEGER references currencies (id),
     balance     numeric(7, 2)       not null,
-    status      varchar(50)         not null,
+    status_id      INTEGER references statuses (id),
     created_at  timestamp           not null
 );

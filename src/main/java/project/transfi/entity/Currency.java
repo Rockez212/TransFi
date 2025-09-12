@@ -16,7 +16,7 @@ public class Currency {
     @SequenceGenerator(name = "currency_id_seq", sequenceName = "currency_id_seq", allocationSize = 1)
     private Long id;
     @Enumerated(EnumType.STRING)
-    @Column(name = "name")
+    @Column(name = "currency_type")
     private CurrencyType currencyType;
 
     public Currency(CurrencyType currencyType) {

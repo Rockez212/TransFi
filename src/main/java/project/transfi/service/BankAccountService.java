@@ -6,11 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import project.transfi.command.CreateBankAccountCommand;
 import project.transfi.entity.BankAccount;
 import project.transfi.entity.Currency;
+import project.transfi.entity.Status;
 import project.transfi.entity.User;
 import project.transfi.exception.CurrencyNotFoundException;
 import project.transfi.exception.UserAlreadyHasBankAccount;
 import project.transfi.repository.BankAccountRepository;
 import project.transfi.repository.CurrencyRepository;
+import project.transfi.type.StatusType;
 import project.transfi.utill.BankConfig;
 
 import java.math.BigInteger;
@@ -31,7 +33,7 @@ public class BankAccountService {
         User currentUser = authService.getCurrentUser();
         checkIfBankAccountExists(currentUser);
         Currency currency = currencyRepository.findById(command.getCurrencyId()).orElseThrow(() -> new CurrencyNotFoundException("Currency not found"));
-        BankAccount bankAccount = new BankAccount(currentUser, generateIban(), currency);
+        BankAccount bankAccount = new BankAccount(currentUser, generateIban(), currency, new Status(StatusType.ACTIVE));
         bankAccountRepository.save(bankAccount);
     }
 

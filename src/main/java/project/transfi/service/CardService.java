@@ -8,13 +8,14 @@ import project.transfi.command.CardDetailsCommand;
 import project.transfi.command.CreateCardCommand;
 import project.transfi.command.TransferToCommand;
 import project.transfi.entity.Card;
+import project.transfi.entity.Status;
 import project.transfi.entity.Transaction;
 import project.transfi.exception.*;
-import project.transfi.repository.CardCategoryRepository;
+import project.transfi.repository.CardTypeRepository;
 import project.transfi.repository.CardRepository;
 import project.transfi.repository.CurrencyRepository;
 import project.transfi.repository.TransactionRepository;
-import project.transfi.type.Status;
+import project.transfi.type.StatusType;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
@@ -27,7 +28,7 @@ import java.util.Random;
 public class CardService {
 
     private final AuthService authService;
-    private final CardCategoryRepository cardCategoryRepository;
+    private final CardTypeRepository cardTypeRepository;
     private final CardRepository cardRepository;
     private final CurrencyRepository currencyRepository;
     private final TransactionService transactionService;
@@ -39,8 +40,9 @@ public class CardService {
     public void create(CreateCardCommand command) {
         Card newCard = new Card(authService.getCurrentUser().getBankAccount(),
                 generateCardNumber(),
-                cardCategoryRepository.findById(command.getCardTypeId()).orElseThrow(() -> new CardCategoryNotFoundException("Card category not found")),
+                cardTypeRepository.findById(command.getCardTypeId()).orElseThrow(() -> new CardCategoryNotFoundException("Card category not found")),
                 generateCvv(),
+                new Status(StatusType.ACTIVE),
                 currencyRepository.findById(command.getCardCurrencyId()).orElseThrow(() -> new CurrencyNotFoundException("Currency not found")));
         cardRepository.save(newCard);
 
@@ -94,7 +96,7 @@ public class CardService {
     }
 
     private boolean validateCard(Card fromCard, CardDetailsCommand command) {
-        if (fromCard.getStatus() != Status.ACTIVE) {
+        if (fromCard.getStatus().getStatusType() != StatusType.ACTIVE) {
             throw new IncorrectCredentials("Status is not ACTIVE");
         }
 
@@ -120,7 +122,7 @@ public class CardService {
     }
 
     private void validateTransfer(Card fromCard, Card toCard, CardDetailsCommand command) {
-        if (!validateCard(fromCard, command) || toCard.getStatus() != Status.ACTIVE || !validateCurrency(fromCard, toCard)) {
+        if (!validateCard(fromCard, command) || toCard.getStatus().getStatusType() != StatusType.ACTIVE || !validateCurrency(fromCard, toCard)) {
             throw new IncorrectCredentials("Error transfer from card");
         }
     }
