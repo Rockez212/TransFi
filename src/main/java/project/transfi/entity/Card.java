@@ -29,9 +29,10 @@ public class Card {
     @Column(name = "cvv_hash")
     private int cvvHash;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "card_type")
+    @JoinColumn(name = "card_type_id")
     private CardType type;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id")
     private Status status;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "currency_id")

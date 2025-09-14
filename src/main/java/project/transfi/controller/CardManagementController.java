@@ -1,11 +1,12 @@
 package project.transfi.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.transfi.command.CardDetailsCommand;
 import project.transfi.command.CreateCardCommand;
-import project.transfi.command.TransferToCommand;
+import project.transfi.dto.CardDto;
+import project.transfi.dto.TransferDto;
 import project.transfi.entity.Card;
 import project.transfi.service.CardService;
 
@@ -20,19 +21,19 @@ public class CardManagementController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestBody CreateCardCommand command) {
+    public ResponseEntity<String> create(@RequestBody @Valid CreateCardCommand command) {
         cardService.create(command);
         return ResponseEntity.ok("Card created");
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<String> transfer(@RequestBody TransferToCommand transferCommand, CardDetailsCommand detailsCommand) {
-        cardService.transferTo(transferCommand, detailsCommand);
+    public ResponseEntity<String> transfer(@RequestBody @Valid TransferDto command) {
+        cardService.transferTo(command);
         return ResponseEntity.ok("Successfully transferred");
     }
 
-    @GetMapping("/cards")
-    public ResponseEntity<List<Card>> getCards() {
-        return ResponseEntity.ok(cardService.getAllCards());
+    @GetMapping()
+    public ResponseEntity<List<CardDto>> getCards() {
+        return ResponseEntity.ok(cardService.getCards());
     }
 }

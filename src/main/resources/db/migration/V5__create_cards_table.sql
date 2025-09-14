@@ -8,7 +8,7 @@ CREATE TABLE cards
     card_number     varchar(16)   not null,
     expiration_date date          not null,
     cvv_hash        INTEGER       not null,
-    card_type       INTEGER       not null references cards_type (id),
-    status          varchar(50)   not null,
+    card_type_id       INTEGER       not null references cards_type (id),
+    status_id         INTEGER references statuses(id) not null,
     currency_id     INTEGER REFERENCES currencies (id)
 );
