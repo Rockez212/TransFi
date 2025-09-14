@@ -4,22 +4,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.transfi.command.CardDetailsCommand;
+import project.transfi.command.CardDetailsConfirmationCommand;
 import project.transfi.command.CreateCardCommand;
-import project.transfi.command.TransferToCommand;
+import project.transfi.command.TransferDetailsCommand;
+import project.transfi.dto.CardDto;
+import project.transfi.dto.TransferDto;
 import project.transfi.entity.Card;
-import project.transfi.entity.Transaction;
+import project.transfi.entity.Status;
 import project.transfi.exception.*;
-import project.transfi.repository.CardCategoryRepository;
-import project.transfi.repository.CardRepository;
-import project.transfi.repository.CurrencyRepository;
-import project.transfi.repository.TransactionRepository;
-import project.transfi.type.Status;
+import project.transfi.mapper.CardMapper;
+import project.transfi.repository.*;
+import project.transfi.type.StatusType;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 @Service
@@ -27,20 +26,25 @@ import java.util.Random;
 public class CardService {
 
     private final AuthService authService;
-    private final CardCategoryRepository cardCategoryRepository;
+    private final CardTypeRepository cardTypeRepository;
     private final CardRepository cardRepository;
     private final CurrencyRepository currencyRepository;
     private final TransactionService transactionService;
+    private final StatusRepository statusRepository;
+    private final BankAccountRepository bankAccountRepository;
+    private final CardMapper cardMapper;
     @Value("${transfer.cross-currency-fee-percent}")
     private BigDecimal crossCurrencyFeePercent;
     private final TransactionRepository transactionRepository;
 
     @Transactional
     public void create(CreateCardCommand command) {
+        Status status = statusRepository.findById(command.getStatusId()).orElseThrow(() -> new StatusNotFoundException("Status not found"));
         Card newCard = new Card(authService.getCurrentUser().getBankAccount(),
                 generateCardNumber(),
-                cardCategoryRepository.findById(command.getCardTypeId()).orElseThrow(() -> new CardCategoryNotFoundException("Card category not found")),
+                cardTypeRepository.findById(command.getCardTypeId()).orElseThrow(() -> new CardCategoryNotFoundException("Card category not found")),
                 generateCvv(),
+                status,
                 currencyRepository.findById(command.getCardCurrencyId()).orElseThrow(() -> new CurrencyNotFoundException("Currency not found")));
         cardRepository.save(newCard);
 
@@ -60,18 +64,17 @@ public class CardService {
     }
 
     @Transactional
-    public void transferTo(TransferToCommand transferToCommand, CardDetailsCommand detailsCommand) {
-        Card fromCard = getFromCard(transferToCommand.getCardId());
-        Card toCard = getToCard(transferToCommand.getToCardNumber());
+    public void transferTo(TransferDto transferCommand) {
 
-        BigDecimal amountToTransfer = prepareAmount(transferToCommand.getAmount());
-        validateAmountBalance(fromCard, amountToTransfer);
+        Card fromCard = getFromCard(transferCommand.getTransferDetailsCommand().getCardId());
+        Card toCard = getToCard(transferCommand.getTransferDetailsCommand().getToCardNumber());
 
-        validateTransfer(fromCard, toCard, detailsCommand);
-        applyTransfer(fromCard, toCard, amountToTransfer);
-        Transaction transaction = transactionService.createTransaction(fromCard, toCard, transferToCommand.getTransactionType(), amountToTransfer);
-        saveEntities(fromCard, toCard, transaction);
+        BigDecimal amountToTransferWithFee = prepareAmount(transferCommand.getTransferDetailsCommand().getAmount());
+        validateAmountBalance(fromCard, amountToTransferWithFee);
 
+        validateTransfer(fromCard, toCard, transferCommand.getCardDetailsConfirmationCommand(), transferCommand.getTransferDetailsCommand());
+        applyTransfer(fromCard, toCard, amountToTransferWithFee, new BigDecimal(transferCommand.getTransferDetailsCommand().getAmount()));
+        saveEntities(fromCard, toCard);
     }
 
     private Card getFromCard(Long fromCardId) {
@@ -84,29 +87,29 @@ public class CardService {
 
     private BigDecimal prepareAmount(String amountToFormat) {
         BigDecimal amount = formatedBalance(amountToFormat);
-        return Calculator.calculateFee(amount, crossCurrencyFeePercent);
+        return Calculator.calculateAmountAfterFee(amount, crossCurrencyFeePercent);
     }
 
-    private void validateAmountBalance(Card fromCard, BigDecimal amount) {
-        if (!fromCard.checkBalance(amount)) {
+    private void validateAmountBalance(Card fromCard, BigDecimal amountToCheck) {
+        if (!fromCard.checkBalance(amountToCheck)) {
             throw new NotEnoughBalanceException("Not enough balance");
         }
     }
 
-    private boolean validateCard(Card fromCard, CardDetailsCommand command) {
-        if (fromCard.getStatus() != Status.ACTIVE) {
+    private boolean validateCard(Card fromCard, CardDetailsConfirmationCommand cardDetailsConfirmationCommand, TransferDetailsCommand transferDetailsCommand) {
+        if (fromCard.getStatus().getStatusType() != StatusType.ACTIVE) {
             throw new IncorrectCredentials("Status is not ACTIVE");
         }
 
-        if (!Objects.equals(fromCard.getCardNumber(), command.getToCardNumber())) {
+        if (fromCard.getCardNumber().equals(transferDetailsCommand.getToCardNumber())) {
             throw new IncorrectCredentials("Invalid Card Number");
         }
 
-        if (!Objects.equals(fromCard.getExpirationDate(), command.getExpirationDate())) {
+        if (!fromCard.getExpirationDate().equals(cardDetailsConfirmationCommand.getExpirationDate())) {
             throw new IncorrectCredentials("Invalid expiration date");
         }
 
-        if (fromCard.getCvvHash() != command.getCvv()) {
+        if (fromCard.getCvvHash() != cardDetailsConfirmationCommand.getCvv()) {
             throw new IncorrectCredentials("Incorrect cvv");
         }
         return true;
@@ -119,8 +122,8 @@ public class CardService {
         return true;
     }
 
-    private void validateTransfer(Card fromCard, Card toCard, CardDetailsCommand command) {
-        if (!validateCard(fromCard, command) || toCard.getStatus() != Status.ACTIVE || !validateCurrency(fromCard, toCard)) {
+    private void validateTransfer(Card fromCard, Card toCard, CardDetailsConfirmationCommand cardDetailsConfirmationCommand, TransferDetailsCommand transferDetailsCommand) {
+        if (!validateCard(fromCard, cardDetailsConfirmationCommand, transferDetailsCommand) || toCard.getStatus().getStatusType() != StatusType.ACTIVE || !validateCurrency(fromCard, toCard)) {
             throw new IncorrectCredentials("Error transfer from card");
         }
     }
@@ -136,27 +139,23 @@ public class CardService {
         return amount;
     }
 
-    private void applyTransfer(Card fromCard, Card toCard, BigDecimal amount) {
-        fromCard.subtractBalance(amount);
-        toCard.addBalance(amount);
+    private void applyTransfer(Card fromCard, Card toCard, BigDecimal amountWithFee, BigDecimal amountToTransfer) {
+        fromCard.subtractBalance(amountWithFee);
+        toCard.addBalance(amountToTransfer);
     }
 
-    private void saveEntities(Card fromCard, Card toCard, Transaction transaction) {
+    private void saveEntities(Card fromCard, Card toCard) {
         cardRepository.save(fromCard);
         cardRepository.save(toCard);
-        transactionRepository.save(transaction);
     }
 
 
-    @Transactional
-    public List<Card> getAllCards() {
-        return cardRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<CardDto> getCards() {
+        List<Card> cardDtos = cardRepository.findByAccount(authService.getCurrentUser().getBankAccount()).orElseThrow(() -> new CardNotFoundException("Cards not found"));
+        return cardDtos.stream()
+                .map(cardMapper::toDto)
+                .toList();
     }
-
-    public BigDecimal setCrossCurrencyFeePercent(BigDecimal amount) {
-        this.crossCurrencyFeePercent = amount;
-        return amount;
-    }
-
 
 }

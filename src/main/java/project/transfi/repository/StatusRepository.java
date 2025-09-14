@@ -2,11 +2,7 @@ package project.transfi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import project.transfi.entity.Currency;
-
-import java.util.Optional;
-
+import project.transfi.entity.Status;
 @Repository
-public interface CurrencyRepository extends JpaRepository<Currency, Long> {
-
+public interface StatusRepository extends JpaRepository<Status, Long> {
 }

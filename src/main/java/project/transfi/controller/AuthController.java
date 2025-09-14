@@ -24,7 +24,7 @@ public class AuthController {
         return ResponseEntity.ok("Sign up successful");
     }
 
-    @PostMapping("sign-in")
+    @PostMapping("/sign-in")
     public ResponseEntity<TokenResponseDto> signIn(@RequestBody @Valid SignInCommand command) {
         return ResponseEntity.ok(authService.signIn(command));
     }

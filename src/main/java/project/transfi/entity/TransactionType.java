@@ -18,13 +18,13 @@ public class TransactionType {
     @SequenceGenerator(name = "transaction_type_id_seq", sequenceName = "transaction_type_id_seq", allocationSize = 1)
     private Long id;
     @Enumerated(EnumType.STRING)
-    @Column(name = "name")
-    private TransactionTypeCode name;
+    @Column(name = "transaction_type")
+    private TransactionTypeCode transactionType;
 
 
 
-    public TransactionType(TransactionTypeCode name) {
-        this.name = name;
+    public TransactionType(TransactionTypeCode transactionType) {
+        this.transactionType = transactionType;
     }
 
     protected TransactionType() {

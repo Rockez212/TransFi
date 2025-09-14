@@ -1,6 +1,6 @@
 package project.transfi.type;
 
-public enum Status {
+public enum StatusType {
     ACTIVE,
     FROZEN,
     CLOSED

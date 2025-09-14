@@ -1,6 +1,6 @@
 package project.transfi.type;
 
-public enum CardType {
+public enum CardTypeCode {
     DEBIT,
     CREDIT,
 }

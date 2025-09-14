@@ -3,18 +3,21 @@ package project.transfi.service;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class Calculator {
 
-    public static BigDecimal calculateFee(BigDecimal amountToTransfer, BigDecimal fee) {
-        if (amountToTransfer == BigDecimal.ZERO || fee == BigDecimal.ZERO) {
-            throw new IllegalArgumentException("Amount to transfer cannot be null");
+    public static BigDecimal calculateAmountAfterFee(BigDecimal amountToTransfer, BigDecimal feePercent) {
+        if (amountToTransfer.compareTo(BigDecimal.ZERO) <= 0 || feePercent.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Amount and fee must be positive");
         }
-        return amountToTransfer
-                .multiply(fee)
-                .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal amountWithFee = amountToTransfer
+                .multiply(feePercent)
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        return amountToTransfer.add(amountWithFee);
     }
+
 
 
 }

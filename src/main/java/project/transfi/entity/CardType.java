@@ -3,33 +3,30 @@ package project.transfi.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import project.transfi.type.CardType;
+import project.transfi.type.CardTypeCode;
 
-import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "cards_type")
-public class CardCategory {
+public class CardType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_seq")
     @SequenceGenerator(name = "card_type_seq", sequenceName = "card_type_seq", allocationSize = 1)
     private Long id;
-    @Column(name = "card_type")
     @Enumerated(EnumType.STRING)
-    private CardType cardType;
-    @OneToMany(mappedBy = "type")
-    private List<Card> cards;
+    @Column(name = "card_type")
+    private CardTypeCode cardType;
 
 
-    public CardCategory(CardType type) {
+    public CardType(CardTypeCode type) {
         this.cardType = type;
     }
 
-    protected CardCategory() {
+    protected CardType() {
     }
 
 
@@ -37,7 +34,7 @@ public class CardCategory {
     public boolean equals(Object o) {
         if (o == null || o.getClass() != getClass())
             return false;
-        CardCategory other = (CardCategory) o;
+        CardType other = (CardType) o;
         return Objects.equals(id, other.id);
     }
 

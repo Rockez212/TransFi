@@ -2,12 +2,12 @@ package project.transfi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import project.transfi.entity.CardCategory;
+import project.transfi.entity.CardType;
 
 import java.util.Optional;
 
 @Repository
-public interface CardCategoryRepository extends JpaRepository<CardCategory, Long> {
+public interface CardTypeRepository extends JpaRepository<CardType, Long> {
 
-    Optional<CardCategory> findById(Long id);
+    Optional<CardType> findById(Long id);
 }

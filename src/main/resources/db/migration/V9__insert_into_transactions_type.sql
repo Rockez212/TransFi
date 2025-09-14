@@ -1,4 +1,4 @@
-INSERT INTO transactions_type(name)
+INSERT INTO transactions_type(transaction_type)
 VALUES ('DEPOSIT'),
        ('TRANSFER'),
        ('WITHDRAW');

@@ -1,5 +1,6 @@
 package project.transfi.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class BankAccountController {
     private final BankAccountService bankAccountService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestBody CreateBankAccountCommand command) {
+    public ResponseEntity<String> create(@RequestBody @Valid CreateBankAccountCommand command) {
         bankAccountService.create(command);
         return ResponseEntity.ok("Bank account created");
     }
