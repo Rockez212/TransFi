@@ -40,12 +40,7 @@ public class CardService {
     @Transactional
     public void create(CreateCardCommand command) {
         Status status = statusRepository.findById(command.getStatusId()).orElseThrow(() -> new StatusNotFoundException("Status not found"));
-        Card newCard = new Card(authService.getCurrentUser().getBankAccount(),
-                generateCardNumber(),
-                cardTypeRepository.findById(command.getCardTypeId()).orElseThrow(() -> new CardCategoryNotFoundException("Card category not found")),
-                generateCvv(),
-                status,
-                currencyRepository.findById(command.getCardCurrencyId()).orElseThrow(() -> new CurrencyNotFoundException("Currency not found")));
+        Card newCard = new Card(authService.getCurrentUser().getBankAccount(), generateCardNumber(), cardTypeRepository.findById(command.getCardTypeId()).orElseThrow(() -> new CardCategoryNotFoundException("Card category not found")), generateCvv(), status, currencyRepository.findById(command.getCardCurrencyId()).orElseThrow(() -> new CurrencyNotFoundException("Currency not found")));
         cardRepository.save(newCard);
 
     }
@@ -69,11 +64,11 @@ public class CardService {
         Card fromCard = getFromCard(transferCommand.getTransferDetailsCommand().getCardId());
         Card toCard = getToCard(transferCommand.getTransferDetailsCommand().getToCardNumber());
 
-        BigDecimal amountToTransferWithFee = prepareAmount(transferCommand.getTransferDetailsCommand().getAmount());
-        validateAmountBalance(fromCard, amountToTransferWithFee);
+        BigDecimal amountToSubtractWithFee = prepareAmount(transferCommand.getTransferDetailsCommand().getAmount());
+        validateAmountBalance(fromCard, amountToSubtractWithFee);
 
         validateTransfer(fromCard, toCard, transferCommand.getCardDetailsConfirmationCommand(), transferCommand.getTransferDetailsCommand());
-        applyTransfer(fromCard, toCard, amountToTransferWithFee, new BigDecimal(transferCommand.getTransferDetailsCommand().getAmount()));
+        applyTransfer(fromCard, toCard, amountToSubtractWithFee, new BigDecimal(transferCommand.getTransferDetailsCommand().getAmount()));
         saveEntities(fromCard, toCard);
     }
 
@@ -139,8 +134,8 @@ public class CardService {
         return amount;
     }
 
-    private void applyTransfer(Card fromCard, Card toCard, BigDecimal amountWithFee, BigDecimal amountToTransfer) {
-        fromCard.subtractBalance(amountWithFee);
+    private void applyTransfer(Card fromCard, Card toCard, BigDecimal amountToSubtractWithFee, BigDecimal amountToTransfer) {
+        fromCard.subtractBalance(amountToSubtractWithFee);
         toCard.addBalance(amountToTransfer);
     }
 
@@ -153,9 +148,7 @@ public class CardService {
     @Transactional(readOnly = true)
     public List<CardDto> getCards() {
         List<Card> cardDtos = cardRepository.findByAccount(authService.getCurrentUser().getBankAccount()).orElseThrow(() -> new CardNotFoundException("Cards not found"));
-        return cardDtos.stream()
-                .map(cardMapper::toDto)
-                .toList();
+        return cardDtos.stream().map(cardMapper::toDto).toList();
     }
 
 }
