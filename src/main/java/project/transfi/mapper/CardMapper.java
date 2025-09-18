@@ -1,7 +1,6 @@
 package project.transfi.mapper;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import project.transfi.dto.CardDto;
 import project.transfi.entity.Card;
 
@@ -19,8 +18,8 @@ public class CardMapper {
                 card.getCardNumber(),
                 card.getExpirationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 String.valueOf(card.getCvvHash()),
-                card.getType().getCardType().name(),
-                card.getStatus().getStatusType().name()
+                card.getCardType().name(),
+                card.getStatusType().name()
         );
     }
 }
