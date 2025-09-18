@@ -1,3 +1,0 @@
-INSERT INTO cards_type(card_type)
-VALUES ('DEBIT'),
-       ('CREDIT');

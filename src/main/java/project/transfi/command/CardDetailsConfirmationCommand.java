@@ -9,6 +9,8 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 public class CardDetailsConfirmationCommand {
+    @Pattern(regexp = "\\d{16}",message = "Card number must be contain 16 digits")
+    private String toCardNumber;
     @NotNull(message = "The data cannot be null")
     @FutureOrPresent(message = "The date cannot be in the past")
     private LocalDate expirationDate;

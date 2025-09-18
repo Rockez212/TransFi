@@ -3,6 +3,9 @@ package project.transfi.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import project.transfi.type.CardType;
+import project.transfi.type.CurrencyType;
+import project.transfi.type.StatusType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,25 +31,22 @@ public class Card {
     private LocalDate expirationDate;
     @Column(name = "cvv_hash")
     private int cvvHash;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "card_type_id")
-    private CardType type;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
-    private Status status;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "currency_id")
-    private Currency currency;
+    @Enumerated(EnumType.STRING)
+    private CardType cardType;
+    @Enumerated(EnumType.STRING)
+    private StatusType statusType;
+    @Enumerated(EnumType.STRING)
+    private CurrencyType currencyType;
 
-    public Card(BankAccount account, String cardNumber, CardType type, int cvvHash, Status status, Currency currency) {
+    public Card(BankAccount account, String cardNumber, CardType cardType, int cvvHash, CurrencyType currencyType) {
         this.account = account;
         this.balance = BigDecimal.ZERO;
         this.cardNumber = cardNumber;
         this.expirationDate = getExpirationDate(LocalDate.now());
         this.cvvHash = cvvHash;
-        this.type = type;
-        this.status = status;
-        this.currency = currency;
+        this.cardType = cardType;
+        this.statusType = StatusType.ACTIVE;
+        this.currencyType = currencyType;
     }
 
     public Card() {
@@ -56,11 +56,11 @@ public class Card {
         return now.plusYears(4);
     }
 
-    public void subtractBalance(BigDecimal amount) {
+    public void withdraw(BigDecimal amount) {
         this.balance = balance.subtract(amount);
     }
 
-    public void addBalance(BigDecimal amount) {
+    public void deposit(BigDecimal amount) {
         this.balance = balance.add(amount);
     }
 

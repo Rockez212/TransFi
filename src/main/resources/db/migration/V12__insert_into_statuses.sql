@@ -1,1 +1,0 @@
-INSERT INTO statuses(status_type) VALUES ('ACTIVE'),('FROZEN'),('CLOSED');

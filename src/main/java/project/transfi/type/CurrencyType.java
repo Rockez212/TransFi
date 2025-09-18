@@ -1,18 +1,18 @@
 package project.transfi.type;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 @Getter
-public enum CurrencyType {
-    USD("$"),
-    EUR("€"),
-    GBP("£");
 
-    private final String symbol;
+public enum CurrencyType implements EnumWithValue {
+    USD,
+    EUR,
+    GBP;
 
-    CurrencyType(String symbol) {
-        this.symbol = symbol;
+    @JsonCreator
+    public static CurrencyType from(String type) {
+        return EnumWithValue.fromValue(CurrencyType.class, type);
     }
-
 
 }

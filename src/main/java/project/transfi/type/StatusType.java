@@ -1,7 +1,14 @@
 package project.transfi.type;
 
-public enum StatusType {
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+public enum StatusType implements EnumWithValue {
     ACTIVE,
     FROZEN,
-    CLOSED
+    CLOSED;
+
+    @JsonCreator
+    public static StatusType from(String type) {
+        return EnumWithValue.fromValue(StatusType.class, type);
+    }
 }
