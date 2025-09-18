@@ -3,6 +3,7 @@ package project.transfi.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import project.transfi.type.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,19 +24,18 @@ public class Transaction {
     private BankAccount fromAccount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_account")
-    private BankAccount to_account;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "transaction_type_id")
-    private TransactionType type;
+    private BankAccount toAccount;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
     @Column(name = "amount")
     private BigDecimal amount;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public Transaction(BankAccount fromAccount, BankAccount to_account, TransactionType type, BigDecimal amount) {
+    public Transaction(BankAccount fromAccount, BankAccount toAccount, TransactionType transactionType, BigDecimal amount) {
         this.fromAccount = fromAccount;
-        this.to_account = to_account;
-        this.type = type;
+        this.toAccount = toAccount;
+        this.transactionType = transactionType;
         this.amount = amount;
         this.createdAt = LocalDateTime.now();
     }

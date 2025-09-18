@@ -3,10 +3,12 @@ package project.transfi.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import project.transfi.type.CurrencyType;
 import project.transfi.type.StatusType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,25 +26,26 @@ public class BankAccount {
     private User user;
     @Column(name = "iban")
     private String iban;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "currency_id")
-    private Currency currency;
+    @Enumerated(EnumType.STRING)
+    private CurrencyType currencyType;
     @Column(name = "balance")
     private BigDecimal balance;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
-    private Status status;
+    @Enumerated(EnumType.STRING)
+    private StatusType statusType;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "fromAccount",fetch = FetchType.LAZY)
+    private List<Transaction> transactions;
     @OneToMany(mappedBy = "account")
     private List<Card> cards;
 
-    public BankAccount(User user, String iban, Currency currency,Status status) {
+
+    public BankAccount(User user, String iban, CurrencyType currencyType) {
         this.user = user;
         this.iban = iban;
-        this.currency = currency;
+        this.currencyType = currencyType;
         this.balance = BigDecimal.ZERO;
-        this.status = status;
+        this.statusType = StatusType.ACTIVE;
         this.createdAt = LocalDateTime.now();
     }
 

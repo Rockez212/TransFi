@@ -40,29 +40,15 @@ public class HandleControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @ExceptionHandler(CardCategoryNotFoundException.class)
-    public ResponseEntity<String> handleCardCategoryNotFound(CardCategoryNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
     @ExceptionHandler(CardNotFoundException.class)
     public ResponseEntity<String> handleCardNotFound(CardNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(CurrencyNotFoundException.class)
-    public ResponseEntity<String> handleCurrencyNotFound(CurrencyNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
 
     @ExceptionHandler(IncorrectCredentials.class)
     public ResponseEntity<String> handleIncorrectCredentials(IncorrectCredentials ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(IncorrectCurrencyException.class)
-    public ResponseEntity<String> handleIncorrectCurrency(IncorrectCurrencyException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
@@ -70,13 +56,14 @@ public class HandleControllerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 
-    @ExceptionHandler(TransactionTypeNotFoundException.class)
-    public ResponseEntity<String> handleTransactionTypeNotFound(TransactionTypeNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
 
     @ExceptionHandler(UserAlreadyHasBankAccount.class)
     public ResponseEntity<String> handleUserAlreadyHasBankAccount(UserAlreadyHasBankAccount ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TypeNotFoundException.class)
+    public ResponseEntity<String> handleTypeNotFound(TypeNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

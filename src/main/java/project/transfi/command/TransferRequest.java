@@ -1,15 +1,13 @@
-package project.transfi.dto;
+package project.transfi.command;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import project.transfi.command.CardDetailsConfirmationCommand;
-import project.transfi.command.TransferDetailsCommand;
 
 @Data
 @NoArgsConstructor
-public class TransferDto {
+public class TransferRequest {
     @Valid
     @NotNull
     private TransferDetailsCommand transferDetailsCommand;

@@ -2,10 +2,9 @@ package project.transfi.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import project.transfi.entity.Card;
+import project.transfi.entity.BankAccount;
 import project.transfi.entity.Transaction;
-import project.transfi.exception.TransactionTypeNotFoundException;
-import project.transfi.repository.TransactionTypeRepository;
+import project.transfi.type.TransactionType;
 
 import java.math.BigDecimal;
 
@@ -13,14 +12,16 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class TransactionService {
 
-    private final TransactionTypeRepository transactionTypeRepository;
 
-    public Transaction createTransaction(Card fromCard, Card toCard, Long transactionTypeId, BigDecimal amount) {
-        return new Transaction(
-                fromCard.getAccount(),
-                toCard.getAccount(),
-                transactionTypeRepository.findById(transactionTypeId).orElseThrow(() -> new TransactionTypeNotFoundException("Transaction type not found")),
-                amount
-        );
+    public Transaction withdraw(BankAccount fromAccount, BigDecimal amount) {
+        return new Transaction(fromAccount, null, TransactionType.WITHDRAW, amount);
+    }
+
+    public Transaction deposit(BankAccount fromAccount, BigDecimal amount) {
+        return new Transaction(fromAccount, null, TransactionType.DEPOSIT, amount);
+    }
+
+    public Transaction transfer(BankAccount fromAccount, BankAccount toAccount, BigDecimal amount) {
+        return new Transaction(fromAccount, toAccount, TransactionType.TRANSFER, amount);
     }
 }
