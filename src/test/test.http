@@ -61,17 +61,17 @@ Authorization: Bearer {{accessToken}}
 }
 
 ### Transfer
-POST http://localhost:8080/user/cards/transfer
+POST http://localhost:8080/user/transfer
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
   "transferDetailsCommand": {
     "cardId": 1,
-    "toCardNumber": "4213617343899522",
     "amount": "12.5"
   },
   "cardDetailsConfirmationCommand": {
+    "toCardNumber": "4213617343899522",
     "expirationDate": "2029-09-14",
     "cvv": 398
   }
