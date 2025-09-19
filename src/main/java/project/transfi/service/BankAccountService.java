@@ -68,5 +68,4 @@ public class BankAccountService {
             throw new UserAlreadyHasBankAccount("User already has bank account");
         }
     }
-
 }

@@ -28,18 +28,17 @@ public class TransferService {
     @Value("${transfer.cross-currency-fee-percent}")
     private BigDecimal crossCurrencyFeePercent;
 
-
     @Transactional
     public void transferTo(TransferRequest transferRequest) {
-
         Card fromCard = cardRepository.findById(transferRequest.getTransferDetailsCommand().getCardId()).orElseThrow(() -> new CardNotFoundException("Card not found"));
         Card toCard = cardRepository.findByCardNumber(transferRequest.getCardDetailsConfirmationCommand().getToCardNumber()).orElseThrow(() -> new CardNotFoundException("Card not found"));
 
         BigDecimal amountToSubtractWithFee = prepareAmount(transferRequest.getTransferDetailsCommand().getAmount());
-        validateAmountBalance(fromCard, amountToSubtractWithFee);
 
+        validateAmountBalance(fromCard, amountToSubtractWithFee);
         validateTransfer(fromCard, toCard, transferRequest);
         applyTransfer(fromCard, toCard, amountToSubtractWithFee, new BigDecimal(transferRequest.getTransferDetailsCommand().getAmount()));
+
         cardRepository.saveAll(List.of(fromCard, toCard));
         transactionRepository.save(transactionService.transfer(fromCard.getAccount(), toCard.getAccount(), amountToSubtractWithFee));
     }
@@ -101,5 +100,4 @@ public class TransferService {
         fromCard.withdraw(amountToSubtractWithFee);
         toCard.deposit(amountToTransfer);
     }
-
 }

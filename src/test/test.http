@@ -22,7 +22,7 @@ POST http://localhost:8080/auth/sign-in
 Content-Type: application/json
 
 {
-  "username": "Rocky",
+  "username": "Brocky",
   "password": "12345678"
 }
 
@@ -65,13 +65,13 @@ Authorization: Bearer {{accessToken}}
 
 {
   "transferDetailsCommand": {
-    "cardId": 1,
+    "cardId": 2,
     "amount": "700"
   },
   "cardDetailsConfirmationCommand": {
-    "toCardNumber": "6774093170238798",
-    "expirationDate": "2029-09-19",
-    "cvv": 270
+    "toCardNumber": "3041898399807265",
+    "expirationDate": "2029-09-20",
+    "cvv": 646
   }
 }
 
@@ -82,15 +82,16 @@ Authorization: Bearer {{accessToken}}
 
 {
   "transferDetailsCommand": {
-    "cardId": 1,
-    "amount": "512.5"
+    "cardId": 2,
+    "amount": "700"
   },
   "cardDetailsConfirmationCommand": {
-    "toCardNumber": "6774093170238798",
-    "expirationDate": "2029-09-19",
-    "cvv": 270
+    "toCardNumber": "3041898399807265",
+    "expirationDate": "2029-09-20",
+    "cvv": 646
   }
 }
+
 
 
 
@@ -111,7 +112,7 @@ Authorization: Bearer {{accessToken}}
   }
 }
 
-### get cards
+### Get cards
 GET http://localhost:8080/user/cards
 Authorization: Bearer {{accessToken}}
 

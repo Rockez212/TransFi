@@ -18,6 +18,4 @@ public class Calculator {
                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
         return amountToTransfer.add(amountWithFee);
     }
-
-
 }

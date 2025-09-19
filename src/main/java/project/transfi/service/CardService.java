@@ -35,7 +35,6 @@ public class CardService {
     public void create(CreateCardCommand command) {
         Card newCard = new Card(authService.getCurrentUser().getBankAccount(), generateCardNumber(), command.getCardType(), generateCvv(), command.getCurrencyType());
         cardRepository.save(newCard);
-
     }
 
     private String generateCardNumber() {
@@ -51,12 +50,9 @@ public class CardService {
         return 100 + new SecureRandom().nextInt(900);
     }
 
-
     @Transactional(readOnly = true)
     public List<CardDto> getCards() {
         List<Card> cardDtos = cardRepository.findByAccount(authService.getCurrentUser().getBankAccount()).orElseThrow(() -> new CardNotFoundException("Cards not found"));
         return cardDtos.stream().map(cardMapper::toDto).toList();
     }
-
-
 }
