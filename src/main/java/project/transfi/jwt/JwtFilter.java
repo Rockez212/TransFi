@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import project.transfi.entity.User;
@@ -28,31 +29,39 @@ public class JwtFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
+            String token = authorizationHeader.substring(7).trim();
 
             if (token.isBlank()) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing JWT token");
                 return;
-            } else {
-                try {
-                    Map<String, String> claims = jwtUtill.validateToken(token);
-                    String username = claims.get("username");
+            }
 
-                    if (username == null) {
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Username not found in token");
-                        return;
-                    }
-                    User user = customUserDetails.loadUserByUsername(username);
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            try {
+                Map<String, String> claims = jwtUtill.validateToken(token);
+                String username = claims.get("username");
 
-                    if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
-                } catch (JWTVerificationException e) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid or expired JWT token");
+                if (username == null) {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Username not found in token");
                     return;
                 }
+
+                User user;
+                try {
+                    user = customUserDetails.loadUserByUsername(username);
+                } catch (UsernameNotFoundException e) {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not found");
+                    return;
+                }
+
+                if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+
+            } catch (JWTVerificationException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired JWT token");
+                return;
             }
         }
 

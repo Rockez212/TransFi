@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class TransactionService {
 
-
     public Transaction withdraw(BankAccount fromAccount, BigDecimal amount) {
         return new Transaction(fromAccount, null, TransactionType.WITHDRAW, amount);
     }

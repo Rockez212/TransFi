@@ -8,7 +8,6 @@ import project.transfi.type.StatusType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +33,7 @@ public class BankAccount {
     private StatusType statusType;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    @OneToMany(mappedBy = "fromAccount",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "fromAccount", fetch = FetchType.LAZY)
     private List<Transaction> transactions;
     @OneToMany(mappedBy = "account")
     private List<Card> cards;

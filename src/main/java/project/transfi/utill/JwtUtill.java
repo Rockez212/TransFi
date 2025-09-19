@@ -21,7 +21,6 @@ public class JwtUtill {
     @Value("${jwt_secret}")
     private String secret;
 
-
     public String generateAccessToken(String username) {
         Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
 

@@ -53,7 +53,6 @@ public class AuthService {
         return new TokenResponseDto(accessToken);
     }
 
-
     private void checkIfUsernameExistsOrEmail(String username, String email) {
         if (userRepository.existsByUsernameOrEmail(username, email)) {
             throw new UserAlreadyExistsException("Username already exists");
@@ -62,10 +61,18 @@ public class AuthService {
 
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof User) {
-            return (User) authentication.getPrincipal();
+
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal().equals("anonymousUser")) {
+            throw new UserNotFoundException("User not found");
         }
+
+        if (authentication.getPrincipal() instanceof User user) {
+            return user;
+        }
+
         throw new UserNotFoundException("User not found");
     }
+
 
 }
