@@ -55,15 +55,12 @@ public class TransferService {
         }
     }
 
-    private void validateCardNumber(Card fromCard, String cardNumber) {
-        if (fromCard.getCardNumber().equals(cardNumber)) {
-            throw new IncorrectCredentials("Invalid Card Number");
-        }
-    }
-
     public void validateCard(Card fromCard, TransferRequest transferRequest) {
         if (fromCard.getStatusType() != StatusType.ACTIVE) {
             throw new IncorrectCredentials("Status is not ACTIVE");
+        }
+        if (!fromCard.getCardNumber().equals(transferRequest.getCardDetailsConfirmationCommand().getToCardNumber())) {
+            throw new IncorrectCredentials("Invalid Card Number");
         }
 
         if (!fromCard.getExpirationDate().equals(transferRequest.getCardDetailsConfirmationCommand().getExpirationDate())) {
@@ -87,7 +84,6 @@ public class TransferService {
             throw new IncorrectCredentials("Error transfer from card");
         }
         validateCurrency(fromCard, toCard);
-        validateCardNumber(fromCard, toCard.getCardNumber());
     }
 
     public BigDecimal formatedBalance(String amountToFormat) {

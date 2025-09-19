@@ -24,9 +24,8 @@ public class AtmService {
     public void withdraw(TransferRequest transferRequest) {
         Card fromCard = cardRepository.findById(transferRequest.getTransferDetailsCommand().getCardId()).orElseThrow(() -> new CardNotFoundException("Card not found"));
         BigDecimal toWithdraw = transferService.formatedBalance(transferRequest.getTransferDetailsCommand().getAmount());
-
-        transferService.validateAmountBalance(fromCard, toWithdraw);
         transferService.validateCard(fromCard, transferRequest);
+        transferService.validateAmountBalance(fromCard, toWithdraw);
 
         fromCard.withdraw(toWithdraw);
 

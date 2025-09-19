@@ -45,8 +45,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "currencyId": 1,
-  "statusId": 1
+  "currencyType": "GBP"
 }
 
 ### Create card
@@ -55,10 +54,45 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "cardTypeId": 2,
-  "cardCurrencyId": 1,
-  "statusId": 1
+  "cardType": "DEBIT",
+  "currencyType": "EUR"
 }
+
+### Withdraw
+POST http://localhost:8080/user/atm/withdraw
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "transferDetailsCommand": {
+    "cardId": 1,
+    "amount": "700"
+  },
+  "cardDetailsConfirmationCommand": {
+    "toCardNumber": "6774093170238798",
+    "expirationDate": "2029-09-19",
+    "cvv": 270
+  }
+}
+
+### Deposit
+POST http://localhost:8080/user/atm/deposit
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "transferDetailsCommand": {
+    "cardId": 1,
+    "amount": "512.5"
+  },
+  "cardDetailsConfirmationCommand": {
+    "toCardNumber": "6774093170238798",
+    "expirationDate": "2029-09-19",
+    "cvv": 270
+  }
+}
+
+
 
 ### Transfer
 POST http://localhost:8080/user/transfer
