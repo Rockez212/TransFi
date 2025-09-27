@@ -23,7 +23,6 @@ import java.util.List;
 public class TransferService {
     public final Calculator calculator;
     private final CardRepository cardRepository;
-    private final TransactionRepository transactionRepository;
     private final TransactionService transactionService;
     @Value("${transfer.cross-currency-fee-percent}")
     private BigDecimal crossCurrencyFeePercent;
@@ -40,7 +39,7 @@ public class TransferService {
         applyTransfer(fromCard, toCard, amountToSubtractWithFee, new BigDecimal(transferRequest.getTransferDetailsCommand().getAmount()));
 
         cardRepository.saveAll(List.of(fromCard, toCard));
-        transactionRepository.save(transactionService.transfer(fromCard.getAccount(), toCard.getAccount(), amountToSubtractWithFee));
+        transactionService.transfer(fromCard.getAccount(), toCard.getAccount(), amountToSubtractWithFee);
     }
 
     private BigDecimal prepareAmount(String amountToFormat) {
@@ -54,6 +53,7 @@ public class TransferService {
         }
     }
 
+    //todo: read about rich model and remove this one!
     public void validateCard(Card fromCard, TransferRequest transferRequest) {
         if (fromCard.getStatusType() != StatusType.ACTIVE) {
             throw new IncorrectCredentials("Status is not ACTIVE");

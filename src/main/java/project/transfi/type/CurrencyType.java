@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 @Getter
-
 public enum CurrencyType implements EnumWithValue {
     USD,
     EUR,

@@ -1,7 +1,7 @@
 package project.transfi.type;
 
 import project.transfi.exception.TypeNotFoundException;
-
+//todo: remove it and use jackson or something else
 public interface EnumWithValue {
 
     default String getValue() {

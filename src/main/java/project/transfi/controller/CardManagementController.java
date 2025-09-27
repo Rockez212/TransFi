@@ -17,7 +17,6 @@ public class CardManagementController {
 
     private final CardService cardService;
 
-
     @PostMapping("/create")
     public ResponseEntity<String> create(@RequestBody @Valid CreateCardCommand command) {
         cardService.create(command);

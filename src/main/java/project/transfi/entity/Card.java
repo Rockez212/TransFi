@@ -1,8 +1,12 @@
 package project.transfi.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import project.transfi.command.TransferRequest;
+import project.transfi.exception.IncorrectCredentials;
 import project.transfi.type.CardType;
 import project.transfi.type.CurrencyType;
 import project.transfi.type.StatusType;
@@ -15,6 +19,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Table(name = "cards")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_id_seq")
@@ -49,7 +54,21 @@ public class Card {
         this.currencyType = currencyType;
     }
 
-    public Card() {
+    public void validate(TransferRequest transferRequest) {
+        if (getStatusType() != StatusType.ACTIVE) {
+            throw new IncorrectCredentials("Status is not ACTIVE");
+        }
+        if (!getCardNumber().equals(transferRequest.getCardDetailsConfirmationCommand().getToCardNumber())) {
+            throw new IncorrectCredentials("Invalid Card Number");
+        }
+
+        if (!getExpirationDate().equals(transferRequest.getCardDetailsConfirmationCommand().getExpirationDate())) {
+            throw new IncorrectCredentials("Invalid expiration date");
+        }
+
+        if (getCvvHash() != transferRequest.getCardDetailsConfirmationCommand().getCvv()) {
+            throw new IncorrectCredentials("Incorrect cvv");
+        }
     }
 
     private LocalDate getExpirationDate(LocalDate now) {

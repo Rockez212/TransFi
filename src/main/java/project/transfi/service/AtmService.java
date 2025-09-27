@@ -25,12 +25,13 @@ public class AtmService {
         Card fromCard = cardRepository.findById(transferRequest.getTransferDetailsCommand().getCardId()).orElseThrow(() -> new CardNotFoundException("Card not found"));
         BigDecimal toWithdraw = transferService.formatedBalance(transferRequest.getTransferDetailsCommand().getAmount());
         transferService.validateCard(fromCard, transferRequest);
+        fromCard.validate(transferRequest);
         transferService.validateAmountBalance(fromCard, toWithdraw);
 
         fromCard.withdraw(toWithdraw);
 
         cardRepository.save(fromCard);
-        transactionRepository.save(transactionService.withdraw(fromCard.getAccount(), toWithdraw));
+        transactionService.withdraw(fromCard.getAccount(), toWithdraw);
     }
 
     @Transactional
@@ -41,7 +42,6 @@ public class AtmService {
         transferService.validateCard(toCard, transferRequest);
         toCard.deposit(toDeposit);
 
-        cardRepository.save(toCard);
-        transactionRepository.save(transactionService.deposit(toCard.getAccount(), toDeposit));
+        transactionService.deposit(toCard.getAccount(), toDeposit);
     }
 }
