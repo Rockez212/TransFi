@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.transfi.command.TransferRequest;
 import project.transfi.entity.Card;
+import project.transfi.entity.Transaction;
 import project.transfi.exception.CardNotFoundException;
 import project.transfi.exception.IncorrectCredentials;
 import project.transfi.exception.NotEnoughBalanceException;
@@ -14,6 +15,7 @@ import project.transfi.exception.TypeNotFoundException;
 import project.transfi.repository.CardRepository;
 import project.transfi.repository.TransactionRepository;
 import project.transfi.type.StatusType;
+import project.transfi.type.TransactionType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.List;
 public class TransferService {
     public final Calculator calculator;
     private final CardRepository cardRepository;
-    private final TransactionService transactionService;
+    private final TransactionRepository transactionRepository;
     @Value("${transfer.cross-currency-fee-percent}")
     private BigDecimal crossCurrencyFeePercent;
 
@@ -39,7 +41,7 @@ public class TransferService {
         applyTransfer(fromCard, toCard, amountToSubtractWithFee, new BigDecimal(transferRequest.getTransferDetailsCommand().getAmount()));
 
         cardRepository.saveAll(List.of(fromCard, toCard));
-        transactionService.transfer(fromCard.getAccount(), toCard.getAccount(), amountToSubtractWithFee);
+        transactionRepository.save(new Transaction(fromCard.getAccount(), toCard.getAccount(), TransactionType.TRANSFER, amountToSubtractWithFee));
     }
 
     private BigDecimal prepareAmount(String amountToFormat) {
@@ -53,23 +55,6 @@ public class TransferService {
         }
     }
 
-    //todo: read about rich model and remove this one!
-    public void validateCard(Card fromCard, TransferRequest transferRequest) {
-        if (fromCard.getStatusType() != StatusType.ACTIVE) {
-            throw new IncorrectCredentials("Status is not ACTIVE");
-        }
-        if (!fromCard.getCardNumber().equals(transferRequest.getCardDetailsConfirmationCommand().getToCardNumber())) {
-            throw new IncorrectCredentials("Invalid Card Number");
-        }
-
-        if (!fromCard.getExpirationDate().equals(transferRequest.getCardDetailsConfirmationCommand().getExpirationDate())) {
-            throw new IncorrectCredentials("Invalid expiration date");
-        }
-
-        if (fromCard.getCvvHash() != transferRequest.getCardDetailsConfirmationCommand().getCvv()) {
-            throw new IncorrectCredentials("Incorrect cvv");
-        }
-    }
 
     private void validateCurrency(Card fromCard, Card toCard) {
         if (fromCard.getCurrencyType() != toCard.getCurrencyType()) {
@@ -78,7 +63,7 @@ public class TransferService {
     }
 
     private void validateTransfer(Card fromCard, Card toCard, TransferRequest transferRequest) {
-        validateCard(fromCard, transferRequest);
+        fromCard.validate(transferRequest);
         if (toCard.getStatusType() != StatusType.ACTIVE) {
             throw new IncorrectCredentials("Error transfer from card");
         }

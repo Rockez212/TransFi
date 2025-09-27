@@ -31,6 +31,8 @@ public class Transaction {
     private BigDecimal amount;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Card card;
 
     public Transaction(BankAccount fromAccount, BankAccount toAccount, TransactionType transactionType, BigDecimal amount) {
         this.fromAccount = fromAccount;
