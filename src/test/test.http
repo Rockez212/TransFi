@@ -22,7 +22,7 @@ POST http://localhost:8080/auth/sign-in
 Content-Type: application/json
 
 {
-  "username": "Brocky",
+  "username": "Rocky",
   "password": "12345678"
 }
 
@@ -102,13 +102,13 @@ Authorization: Bearer {{accessToken}}
 
 {
   "transferDetailsCommand": {
-    "cardId": 1,
-    "amount": "12.5"
+    "cardId": 3,
+    "amount": "2500"
   },
   "cardDetailsConfirmationCommand": {
-    "toCardNumber": "4213617343899522",
-    "expirationDate": "2029-09-14",
-    "cvv": 398
+    "toCardNumber": "4256033914913772",
+    "expirationDate": "2029-09-27",
+    "cvv": 224
   }
 }
 

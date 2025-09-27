@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.transfi.command.TransferRequest;
 import project.transfi.entity.Card;
+import project.transfi.entity.Transaction;
 import project.transfi.exception.CardNotFoundException;
 import project.transfi.repository.CardRepository;
 import project.transfi.repository.TransactionRepository;
+import project.transfi.type.TransactionType;
 
 import java.math.BigDecimal;
 
@@ -17,21 +19,20 @@ public class AtmService {
 
     private final CardRepository cardRepository;
     private final TransferService transferService;
-    private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;
 
     @Transactional
     public void withdraw(TransferRequest transferRequest) {
         Card fromCard = cardRepository.findById(transferRequest.getTransferDetailsCommand().getCardId()).orElseThrow(() -> new CardNotFoundException("Card not found"));
         BigDecimal toWithdraw = transferService.formatedBalance(transferRequest.getTransferDetailsCommand().getAmount());
-        transferService.validateCard(fromCard, transferRequest);
+        fromCard.validate(transferRequest);
         fromCard.validate(transferRequest);
         transferService.validateAmountBalance(fromCard, toWithdraw);
 
         fromCard.withdraw(toWithdraw);
 
         cardRepository.save(fromCard);
-        transactionService.withdraw(fromCard.getAccount(), toWithdraw);
+        transactionRepository.save(new Transaction(fromCard.getAccount(), null, TransactionType.WITHDRAW, toWithdraw));
     }
 
     @Transactional
@@ -39,9 +40,9 @@ public class AtmService {
         Card toCard = cardRepository.findById(transferRequest.getTransferDetailsCommand().getCardId()).orElseThrow(() -> new CardNotFoundException("Card not found"));
         BigDecimal toDeposit = transferService.formatedBalance(transferRequest.getTransferDetailsCommand().getAmount());
 
-        transferService.validateCard(toCard, transferRequest);
+        toCard.validate(transferRequest);
         toCard.deposit(toDeposit);
 
-        transactionService.deposit(toCard.getAccount(), toDeposit);
+        transactionRepository.save(new Transaction(toCard.getAccount(), null, TransactionType.DEPOSIT, toDeposit));
     }
 }

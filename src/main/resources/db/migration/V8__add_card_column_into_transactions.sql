@@ -1,0 +1,1 @@
+ALTER TABLE transactions ADD COLUMN card_id INTEGER REFERENCES cards(id);
