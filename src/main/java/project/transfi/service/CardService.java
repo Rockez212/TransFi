@@ -25,11 +25,6 @@ public class CardService {
     private final AuthService authService;
     private final CardRepository cardRepository;
     private final CardMapper cardMapper;
-    private final TransferService transferService;
-    private final TransactionRepository transactionRepository;
-    private final TransactionService transactionService;
-    @Value("${transfer.cross-currency-fee-percent}")
-    private BigDecimal crossCurrencyFeePercent;
 
     @Transactional
     public void create(CreateCardCommand command) {
